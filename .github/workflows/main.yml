@@ -32,7 +32,7 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: sqlite-database
-          path: datos.db
+          path: ./
         continue-on-error: true
 
       - name: Run script

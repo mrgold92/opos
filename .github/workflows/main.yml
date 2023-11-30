@@ -33,6 +33,7 @@ jobs:
         with:
           name: sqlite-database
           path: datos.db
+        continue-on-error: true
 
       - name: Run script
         run: python main.py

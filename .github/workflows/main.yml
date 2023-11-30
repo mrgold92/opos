@@ -27,5 +27,5 @@ jobs:
         # Instala cualquier otra dependencia aquí
 
     - name: Run script
-      run: python script.py
+      run: python main.py
 

@@ -15,10 +15,10 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Set up Python
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v3
         with:
           python-version: "3.x"
 
@@ -29,7 +29,7 @@ jobs:
           pip install python-dotenv
 
       - name: Download Database
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: sqlite-database
           path: datos.db
@@ -39,7 +39,7 @@ jobs:
         run: python main.py
 
       - name: Upload Database
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: sqlite-database
           path: datos.db

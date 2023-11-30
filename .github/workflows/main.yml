@@ -28,12 +28,7 @@ jobs:
           pip install beautifulsoup4
           pip install python-dotenv
 
-      - name: Download Database
-        uses: actions/download-artifact@v3
-        with:
-          name: sqlite-database
-        continue-on-error: true
-
+      
       - name: Run script
         run: python main.py
 
@@ -42,3 +37,10 @@ jobs:
         with:
           name: sqlite-database
           path: datos.db
+      
+      - name: Download Database
+        uses: actions/download-artifact@v3
+        with:
+          name: sqlite-database
+        continue-on-error: true
+

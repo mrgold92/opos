@@ -3,7 +3,7 @@ name: Opos
 on:
   schedule:
     # Se ejecuta cada 30 minutos
-    - cron:  '*/30 * * * *'
+    - cron: "*/30 * * * *"
   workflow_dispatch:
 
 jobs:
@@ -14,21 +14,31 @@ jobs:
       EMAIL_PASSWORD: ${{ secrets.EMAIL_PASSWORD }}
 
     steps:
-    - name: Checkout
-      uses: actions/checkout@v2
+      - name: Checkout
+        uses: actions/checkout@v2
 
-    - name: Set up Python
-      uses: actions/setup-python@v2
-      with:
-        python-version: '3.x'
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: "3.x"
 
-    - name: Install dependencies
-      run: |
-        pip install requests
-        pip install beautifulsoup4
-        pip install python-dotenv
-        # Instala cualquier otra dependencia aquí
+      - name: Install dependencies
+        run: |
+          pip install requests
+          pip install beautifulsoup4
+          pip install python-dotenv
 
-    - name: Run script
-      run: python main.py
+      - name: Download Database
+        uses: actions/download-artifact@v2
+        with:
+          name: sqlite-database
+          path: datos.db
 
+      - name: Run script
+        run: python main.py
+
+      - name: Upload Database
+        uses: actions/upload-artifact@v2
+        with:
+          name: sqlite-database
+          path: datos.db

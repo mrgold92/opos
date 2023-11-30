@@ -81,7 +81,7 @@ def enviar_correo(texto):
     
     server = smtplib.SMTP('smtp.gmail.com', 587)
     server.starttls()
-    server.login(email_user, email_password)')
+    server.login(email_user, email_password)
 
     # Crear el mensaje
     mensaje = MIMEMultipart()

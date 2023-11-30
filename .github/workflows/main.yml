@@ -26,5 +26,5 @@ jobs:
         # Instala cualquier otra dependencia aquí
 
     - name: Run script
-      run: python path/to/your/script.py
+      run: python ./script.py
 

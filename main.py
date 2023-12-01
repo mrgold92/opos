@@ -62,6 +62,7 @@ def enviar_correo(texto):
     
     email_user = os.getenv("EMAIL_USER")
     email_password = os.getenv("EMAIL_PASSWORD")
+    destinatarios = os.getenv("DESTINATARIOS").split(',')
     
     server = smtplib.SMTP('smtp.gmail.com', 587)
     server.starttls()
@@ -70,7 +71,7 @@ def enviar_correo(texto):
     # Crear el mensaje
     mensaje = MIMEMultipart()
     mensaje['From'] = email_user
-    mensaje['To'] = email_user
+    mensaje['To'] = ", ".join(destinatarios)
     mensaje['Subject'] = 'Cambio en la página web de las opos'
 
     # Cuerpo del mensaje
@@ -79,7 +80,8 @@ def enviar_correo(texto):
     <head></head>
     <body>
     <p>Ha habido un cambio en la página web de las opciones de la Seguridad Social.<br>
-    El nuevo elemento es: <b>{}<b></p>
+    El nuevo elemento es: <b>{}</b><br>
+    Puedes verlo en <a href='https://www.seg-social.es/wps/portal/wss/internet/InformacionUtil/9950/cd623d58-d5fb-4d8a-a68f-79f1d65fa61c/73a17349-a805-4d22-aa3b-6dce34da715a/2bcddc79-8452-475b-aad0-96f72201c268#180423GT'>este enlace</a>.</p>
     </body>
     </html>
     """.format(texto)
@@ -87,7 +89,7 @@ def enviar_correo(texto):
 
     # Enviar el correo
     server.sendmail(email_user,
-                    email_user, mensaje.as_string())
+                    destinatarios, mensaje.as_string())
     server.quit()
 
 

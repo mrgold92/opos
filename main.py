@@ -71,7 +71,7 @@ def enviar_correo(texto):
     # Crear el mensaje
     mensaje = MIMEMultipart()
     mensaje['From'] = email_user
-    mensaje['To'] = ", ".join(destinatarios)
+    mensaje['To'] = ",".join(destinatarios)
     mensaje['Subject'] = 'Cambio en la página web de las opos'
 
     # Cuerpo del mensaje

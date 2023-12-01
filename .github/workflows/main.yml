@@ -10,6 +10,8 @@ jobs:
   run-script:
     runs-on: ubuntu-latest
     env:
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
+      DATABASE_KEY: ${{ secrets.DATABASE_KEY }}
       EMAIL_USER: ${{ secrets.EMAIL_USER }}
       EMAIL_PASSWORD: ${{ secrets.EMAIL_PASSWORD }}
 
@@ -24,23 +26,9 @@ jobs:
 
       - name: Install dependencies
         run: |
-          pip install requests
-          pip install beautifulsoup4
-          pip install python-dotenv
-
+          pip install -r requirements.txt
       
       - name: Run script
         run: python main.py
-
-      - name: Upload Database
-        uses: actions/upload-artifact@v3
-        with:
-          name: sqlite-database
-          path: datos.db
       
-      - name: Download Database
-        uses: actions/download-artifact@v3
-        with:
-          name: sqlite-database
-        continue-on-error: true
 

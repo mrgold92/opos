@@ -1,14 +1,14 @@
 import requests
 from bs4 import BeautifulSoup
-import sqlite3
 import smtplib
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from dotenv import load_dotenv
 import os
+from supabase import Client
+
 
 load_dotenv()
-
 
 
 
@@ -30,48 +30,32 @@ def obtener_datos(url):
     return specific_li_texts
 
 
-def conexion_sqlite():
-    # Crear la conexión
-    conn = sqlite3.connect('datos.db')
-    # Crear un cursor
-    c = conn.cursor()
-    # Crear tabla
-    c.execute("""CREATE TABLE IF NOT EXISTS datos (
-            total integer, texto text
-            )""")
-
-    # Devolver la conexión
-    return conn
-
+def conexion():
+    # Conexión a la base de datos
+    url: str = os.getenv("DATABASE_URL")
+    key: str = os.getenv("DATABASE_KEY")
+    supabase: Client = Client(url, key)
+    
+    return supabase
 
 def insertar_datos(conn, total, texto):
-    # Crear un cursor
-    c = conn.cursor()
-    # Insertar datos
-    c.execute("INSERT INTO datos (total, texto) VALUES (?,?)", (total, texto,))
-    # Guardar cambios
-    conn.commit()
+    # Insertar los datos en la base de datos
+    response = conn.table('datos').insert(
+        {'total': total, 'texto': texto}).execute()
+    print(response)
+
 
 
 def mostrar_datos(conn):
-    # Crear un cursor
-    c = conn.cursor()
-    # Seleccionar todos los datos
-    c.execute("SELECT * FROM datos")
-    # Obtener los datos
-    datos = c.fetchall()
-    # Mostrar los datos
-    print(datos)
+     response = conn.table('datos').select('*').execute()
+     print(response)
 
 
 def comprobar_numero(conn, numero):
-    # Crear un cursor
-    c = conn.cursor()
-    # Seleccionar todos los datos
-    c.execute("SELECT * FROM datos WHERE total=?", (numero,))
-    # Obtener los datos
-    datos = c.fetchall()
-    return datos
+    # comprobar si el número ya existe en la base de datos 
+    response = conn.table('datos').select('total').eq('total', numero).execute()
+    return response
+
 
 
 def enviar_correo(texto):
@@ -110,25 +94,27 @@ def enviar_correo(texto):
 url = "https://www.seg-social.es/wps/portal/wss/internet/InformacionUtil/9950/cd623d58-d5fb-4d8a-a68f-79f1d65fa61c/73a17349-a805-4d22-aa3b-6dce34da715a/2bcddc79-8452-475b-aad0-96f72201c268#180423GT"
 
 # Nos conectamos a la base de datos
-conn = conexion_sqlite()
+conn = conexion()
 
 # Llamada a la función y mostrar resultados
 datos = obtener_datos(url)
 total = len(datos)
 ultimoTexto = datos[-1]
 
+
 # Comprobamos si el número de datos ya existe en la base de datos
 existe = comprobar_numero(conn, total)
 
-if not existe:
+
+#Si no hay datos en la base de datos
+if existe.data == []:
     # Insertamos los datos en la base de datos
     insertar_datos(conn, total, ultimoTexto)
     print("El dato ha sido insertado por primera vez")
     enviar_correo(ultimoTexto)
-
 else:
     # Obtenemos el primer dato
-    dato = existe[0][0]
+    dato = existe.data[0]['total']
     # Es igual?
     if total == dato:
         # no hacemos nada
@@ -136,11 +122,9 @@ else:
         pass
     else:
         # Actualizamos el dato
-        c = conn.cursor()
-        c.execute("UPDATE datos SET total=?, texto=? WHERE total=?",
-                  (total, ultimoTexto, dato,))
-        conn.commit()
+        response = conn.table('datos').update({'total': total, 'texto': ultimoTexto}).eq('total', dato).execute()
         print("El dato ha sido actualizado")
         mostrar_datos(conn)
         # Enviar correo electrónico
         enviar_correo(ultimoTexto)
+ 
